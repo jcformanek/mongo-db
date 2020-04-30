@@ -15,6 +15,10 @@ $ docker pull mongo
 $ docker run -d -p 27017:27017/tcp --name my-mongo mongo:latest
 
 ## Run the python script to import the data into the db
+You will need to install the pymongo package
+
+$ pip install pymongo
+
 The python script creates a new database and loads the books data into it.
 
 ## Use the Mongo Comanad Line Interface (CLI) to explore the DB
