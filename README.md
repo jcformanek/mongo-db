@@ -40,6 +40,11 @@ $ exit
 
 $ exit
 
+# Using the telegram bot
+Create a file called token.txt and include the telegram token on the first line of the file. 
+
+$ pip install python-telegram-bot --upgrade
+
 # Sources
 The Books Dataset was obtained here: https://github.com/ozlerhakan/mongodb-json-files
 
