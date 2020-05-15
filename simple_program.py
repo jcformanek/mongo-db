@@ -96,20 +96,19 @@ def justin_operation(client):
     student = students.find_one({'_id':200, 'name':'Justin Dorman'})
 
     print("Before insert, search for Justin Dorman:", student )
-
+    #student to be inserted
     newstudent = {"_id": 200, "name": "Justin Dorman", "scores": [ { "score": 85.21,"type": "exam" }, { "score": 73.88, "type": "quiz" }, { "score": 95.33, "type": "homework"}] }
 
-    students.insert_one(newstudent)
-
     print("Operation: Insert student, Justin Dorman with relevant details")
+
+    #insert student
+    students.insert_one(newstudent)
 
     #show that insert was successful
     student = students.find_one({'_id':200, 'name':'Justin Dorman'})
     print('After insert, search for Justin Dorman:', student)
 
     print("### End of Justin's Operation ###")
-
-
 
 def main():
     client = get_client()
