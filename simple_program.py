@@ -55,7 +55,7 @@ def claude_operation(client):
     print("Before update:", book)
 
     # Add student with id 5 to the list of students on the book
-    books.update({'title':'Android in Action, Second Edition'},
+    books.update_one({'title':'Android in Action, Second Edition'},
                         {"$push":{'students':5}})
 
     # Show that the update was successful
@@ -75,7 +75,25 @@ def emil_operation(client):
 
 # Justin's Operation
 def justin_operation(client):
-    pass
+    print("### Start of Justin's Operation ###")
+    students = client.get_database("books-db").get_collection("students")
+
+    student = students.find_one({'_id':200, 'name':'Justin Dorman'})
+
+    print("Before insert, search for Justin Dorman:", student )
+
+    newstudent = {"_id": 200, "name": "Justin Dorman", "scores": [ { "score": 85.21,"type": "exam" }, { "score": 73.88, "type": "quiz" }, { "score": 95.33, "type": "homework"}] }
+
+    students.insert_one(newstudent)
+
+    print("Operation: Insert student, Justin Dorman with relevant details")
+
+    #show that insert was successful
+    student = students.find_one({'_id':200, 'name':'Justin Dorman'})
+    print('After insert, search for Justin Dorman', student)
+
+    print("### End of Justin's Operation ###")
+
 
 
 def main():
