@@ -67,7 +67,22 @@ def claude_operation(client):
 
 # Matts's Operation
 def matt_operation(client):
-    pass
+    """
+    Finds and prints the 10 most popular books in the library
+    """
+    print("### Start of Matt's Operation ###")
+    books = client.get_database("books-db").get_collection("books")
+
+    print("The 10 most popular books are:")
+
+    popular_books = books.aggregate([{"$project":{"title":1,
+    "numberOfCopies":{"$size":"$students"}}}
+    ,{"$sort":{"numberOfCopies":-1}},{"$limit":10}])
+
+    for book in popular_books:
+        print(book)
+
+    print("### End of Matt's Operation ###")
 
 # Emil's Operation
 def emil_operation(client):
