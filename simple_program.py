@@ -105,7 +105,7 @@ def justin_operation(client):
 
     #show that insert was successful
     student = students.find_one({'_id':200, 'name':'Justin Dorman'})
-    print('After insert, search for Justin Dorman', student)
+    print('After insert, search for Justin Dorman:', student)
 
     print("### End of Justin's Operation ###")
 
