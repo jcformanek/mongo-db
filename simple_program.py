@@ -86,7 +86,18 @@ def matt_operation(client):
 
 # Emil's Operation
 def emil_operation(client):
-    pass
+    print("### Start of Emil's Operation ###")
+    print("Find the 10 students with the lowest average score of quiz, exam, and homework")
+    students = client.get_database("books-db").get_collection("students")
+
+    failed_students = students.aggregate([{"$project":{"name":1,
+     "avg_mark":{"$divide":[{"$sum":"$scores.score"}, 3]}}}, {"$sort":{"avg_mark":1}}, {"$limit":10}])
+
+    for student in failed_students:
+        print(student)
+
+    print("### End of Emil's Operation ###")
+
 
 # Justin's Operation
 def justin_operation(client):
