@@ -9,7 +9,7 @@ def close_client(client):
     client.close()
 
 def create_database(client):
-    dblist = client.database_names()
+    dblist = client.list_database_names()
 
     # If books-db exists, drop it and create a new one. This is to keep
     # the version of the DB the program starts on consistent.
