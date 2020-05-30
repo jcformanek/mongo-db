@@ -12,21 +12,26 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-# Database handler
+# Database functions
 def db_find_book(title):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     database = client['books-db']
     books = database['books']
-    students = database['students']
     book = books.find_one({"title": title})
     student_names = []
     if book is not None:
-        student_ids = book["students"]
-        for id in student_ids:
-            student_names.append(students.find_one({"_id": id})["name"])
+        students = book["students"]
+        for student in students:
+            student_names.append(student["name"])
     client.close()
     return student_names
 
+def db_add_book(title, name):
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    database = client['books-db']
+    books = database['books']
+    books.update_one({'title': title},
+                        {"$push":{'students':{'name': name}}})
 
 # Conversation states
 SELECTING_ACTION, FINDING_BOOK, ADDING_BOOK, RATING_BOOK, FOUND_BOOK = map(str, range(5))
@@ -41,12 +46,11 @@ def start(update, context):
         InlineKeyboardButton(text='Find Book', callback_data=str(FINDING_BOOK)),
         InlineKeyboardButton(text='Add Book', callback_data=str(ADDING_BOOK))
     ], [
-        InlineKeyboardButton(text='Rate Book', callback_data=str(RATING_BOOK)),
         InlineKeyboardButton(text='Done', callback_data=str(END))
     ]]
     keyboard = InlineKeyboardMarkup(buttons)
 
-    text = 'You may search for a book, add a book or rate a book. To abort, simply type /stop.'
+    text = 'You may search for a book or add a book.'
 
     update.message.reply_text(text=text, reply_markup=keyboard)
 
@@ -74,20 +78,19 @@ def found_book(update, context):
     return END
 
 def add_book(update, context):
-    """End conversation from InlineKeyboardButton."""
     update.callback_query.answer()
+    text = 'Please type the name of the book.'
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    text = 'See you around!'
-    update.callback_query.edit_message_text(text=text)
+    return ADDING_BOOK
 
-    return END
+def added_book(update, context):
+    name = update.message.from_user.name
+    book_title = update.message.text
+    db_add_book(book_title, name)
 
-def rate_book(update, context):
-    """End conversation from InlineKeyboardButton."""
-    update.callback_query.answer()
-
-    text = 'See you around!'
-    update.callback_query.edit_message_text(text=text)
+    text = "We have added the book to our database."
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     return END
 
@@ -122,13 +125,10 @@ def main():
                                             pattern='^' + str(FINDING_BOOK) + '$'),
                                 CallbackQueryHandler(add_book,
                                             pattern='^' + str(ADDING_BOOK) + '$'),
-                                CallbackQueryHandler(rate_book,
-                                            pattern='^' + str(RATING_BOOK) + '$'),
                                 CallbackQueryHandler(end,
                                             pattern='^' + str(END) + '$')],
             FINDING_BOOK: [MessageHandler(Filters.text, found_book)],
-            ADDING_BOOK: [MessageHandler(Filters.text, end)],
-            RATING_BOOK: [MessageHandler(Filters.text, end)],
+            ADDING_BOOK: [MessageHandler(Filters.text, added_book)],
         },
 
         fallbacks=[CommandHandler('stop', end)],
