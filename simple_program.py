@@ -54,9 +54,9 @@ def claude_operation(client):
                         {"title":1, "_id":0, "students":1})
     print("Before update:", book)
 
-    # Add student with id 5 to the list of students on the book
+    # Add student with id 5 and name Claude to the list of students on the book
     books.update_one({'title':'Android in Action, Second Edition'},
-                        {"$push":{'students':5}})
+                        {"$push":{'students':{'_id': 5, 'name': 'Claude Formanek'}}})
 
     # Show that the update was successful
     book = books.find_one({'title':'Android in Action, Second Edition'}, 
